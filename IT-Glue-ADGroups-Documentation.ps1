@@ -17,13 +17,14 @@ $Contacts = @()
   $Members = get-adgroupmember $Group
   $MembersTable = $members | Select-Object Name, distinguishedName | ConvertTo-Html -Fragment | Out-String
   foreach($Member in $Members){
-
-  $email = (get-aduser $member -Properties EmailAddress).EmailAddress
-  #Tagging devices
-          if($email){
-          Write-Host "Finding all related contacts - Based on email: $email"
-          $Contacts += (Get-ITGlueContacts -page_size "1000" -filter_primary_email $email).data
-          }
+    If ($Member.objectClass -eq 'user') {
+    $email = (get-aduser $member -Properties EmailAddress).EmailAddress
+    #Tagging devices
+            if($email){
+            Write-Host "Finding all related contacts - Based on email: $email"
+            $Contacts += (Get-ITGlueContacts -page_size "1000" -filter_primary_email $email).data
+            }
+    }
   }
   $FlexAssetBody = 
   @{
