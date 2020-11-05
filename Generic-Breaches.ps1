@@ -101,6 +101,34 @@ foreach ($Customer in $Customers) {
                 'Description'         = $Breach.Description
             }
         }
+        if ($user.proxyaddresses.count -gt 1){                                                  #A seperate loop is needed as some user accounts have proxy addresses defined (ex. AzureAD)
+            Write-Host "    This user has extra proxy addresses. Checking them."
+            For ($i=0;$i -lt $user.proxyaddresses.count;$i++){
+                $ProxyAddress = $user.proxyaddresses[$i].substring(5)                           #Remote smtp: and SMTP: from start of string.
+                if(($ProxyAddress -ne $user.UserPrincipalName) -or ($ProxyAddress -eq "")){     #Skip checking UPN, already happened.
+                    Write-Host "    Checking Proxy Address $ProxyAddress."
+                    try {
+                        $Breaches = $null
+                        $Breaches = Invoke-RestMethod -Uri "https://haveibeenpwned.com/api/v3/breachedaccount/$($ProxyAddress)?truncateResponse=false" -Headers $HIBPHeader -UserAgent 'CyberDrain.com PowerShell Breach Script'
+                    }
+                    catch {
+                        if ($_.Exception.Response.StatusCode.value__ -eq '404') {  } else { write-error "$($_.Exception.message)" }
+                    }
+                    start-sleep 1.5
+                    foreach ($Breach in $Breaches) {
+                        [PSCustomObject]@{
+                            Username              = $ProxyAddress
+                            'Name'                = $Breach.name
+                            'Domain name'         = $breach.Domain
+                            'Date'                = $Breach.Breachdate
+                            'Verified by experts' = if ($Breach.isverified) { 'Yes' } else { 'No' }
+                            'Leaked data'         = $Breach.DataClasses -join ', '
+                            'Description'         = $Breach.Description
+                        }
+                    }
+                }
+            }
+        }
     }
     $BreachListHTML = $HIBPList | ConvertTo-Html -Fragment -PreContent '<h2>Breaches</h2><br> A "breach" is an incident where data is inadvertently exposed in a vulnerable system, usually due to insufficient access controls or security weaknesses in the software. HIBP aggregates breaches and enables people to assess where their personal data has been exposed.<br>' | Out-String
  
