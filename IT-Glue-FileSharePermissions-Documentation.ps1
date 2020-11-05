@@ -12,7 +12,7 @@
     Add-ITGlueBaseURI -base_uri $APIEndpoint
     Add-ITGlueAPIKey $APIKEy
     #Collect Data
-    $AllsmbShares = get-smbshare | Where-Object {(@('Remote Admin','Default share','Remote IPC') -notcontains $_.Description)}
+    $AllsmbShares = Get-SmbShare | Where-Object {( (@('Remote Admin', 'Default share', 'Remote IPC') -notcontains $_.Description) ) -and $_.ShareType -eq 'FileSystemDirectory'}
     foreach($SMBShare in $AllSMBShares){
     $Permissions = get-item $SMBShare.path | get-ntfsaccess
     $Permissions += get-childitem -Depth $RecursiveDepth -Recurse $SMBShare.path | get-ntfsaccess
