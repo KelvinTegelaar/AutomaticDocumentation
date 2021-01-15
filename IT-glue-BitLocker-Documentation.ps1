@@ -18,7 +18,7 @@ $PasswordObject = @{
     type = 'passwords'
     attributes = @{
             name = $PasswordObjectName
-            password = $BitlockVolume.KeyProtector.recoverypassword[1]
+            password = [string]$BitlockVolume.KeyProtector.recoverypassword
             notes = "Bitlocker key for $($Env:COMPUTERNAME)"
 
     }
