@@ -44,12 +44,12 @@ $RolesTable = "<br/><table class=`"table table-bordered table-hover`" >" + $Role
 
 if($machineType -eq "Physical" -and $ComputerSystemInfo.Manufacturer -match "Dell"){
 $DiskLayoutRaw = omreport storage pdisk controller=0 -fmt cdv
-$DiskLayoutSemi = $DiskLayoutRaw |  select-string -SimpleMatch "ID,Status," -context 0,($DiskLayoutRaw).Length | convertfrom-csv -Delimiter "," | select Name,Status,Capacity,State,"Bus Protocol","Product ID","Serial No.","Part Number",Media | convertto-html -Fragment
+$DiskLayoutSemi = $DiskLayoutRaw |  select-string -SimpleMatch "ID;Status;" -context 0,($DiskLayoutRaw).Length | convertfrom-csv -Delimiter ";" | select Name,Status,Capacity,State,"Bus Protocol","Product ID","Serial No.","Part Number",Media | convertto-html -Fragment
 $DiskLayoutTable = "<br/><table class=`"table table-bordered table-hover`" >" + $DiskLayoutsemi
 
 #Try to get RAID layout
 $RAIDLayoutRaw = omreport storage vdisk controller=0 -fmt cdv
-$RAIDLayoutSemi = $RAIDLayoutRaw |  select-string -SimpleMatch "ID,Status," -context 0,($RAIDLayoutRaw).Length | convertfrom-csv -Delimiter "," | select Name,Status,State,Layout,"Device Name","Read Policy","Write Policy",Media |  convertto-html -Fragment
+$RAIDLayoutSemi = $RAIDLayoutRaw |  select-string -SimpleMatch "ID;Status;" -context 0,($RAIDLayoutRaw).Length | convertfrom-csv -Delimiter ";" | select Name,Status,State,Layout,"Device Name","Read Policy","Write Policy",Media |  convertto-html -Fragment
 $RAIDLayoutTable = "<br/><table class=`"table table-bordered table-hover`" >" + $RAIDLayoutsemi
 }else {
     $RAIDLayoutTable = "Could not get physical disk info"
