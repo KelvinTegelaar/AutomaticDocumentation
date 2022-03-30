@@ -55,9 +55,9 @@ foreach($SMBShare in $AllSMBShares){
 $Permissions = get-item $SMBShare.path | get-ntfsaccess
 $Permissions += get-childitem -Depth $RecursiveDepth -Recurse $SMBShare.path | get-ntfsaccess
 $FullAccess = $permissions | where-object {$_.'AccessRights' -eq "FullControl" -AND $_.IsInherited -eq $false -AND $_.'AccessControlType' -ne "Deny"}| Select-Object FullName,Account,AccessRights,AccessControlType  | ConvertTo-Html -PreContent "<h1>Full Access</h1>" -Fragment | Out-String
-$Modify = $permissions | where-object {$_.'AccessRights' -Match "Modify" -AND $_.IsInherited -eq $false -and $_.'AccessControlType' -ne "Deny"}| Select-Object FullName,Account,AccessRights,AccessControlType  | ConvertTo-Html "<h1>Modify</h1>"  -Fragment | Out-String
-$ReadOnly = $permissions | where-object {$_.'AccessRights' -Match "Read" -AND $_.IsInherited -eq $false -and $_.'AccessControlType' -ne "Deny"}| Select-Object FullName,Account,AccessRights,AccessControlType  | ConvertTo-Html "<h1>Read Only</h1>" -Fragment | Out-String
-$Deny =   $permissions | where-object {$_.'AccessControlType' -eq "Deny" -AND $_.IsInherited -eq $false} | Select-Object FullName,Account,AccessRights,AccessControlType | ConvertTo-Html -Fragment "<h1>Deny</h1>" | Out-String
-$PermCSV = $Permissions | Export-Csv -Path C:\Export\ExportOfPermissions.csv -NoTypeInformation -append | % {$_ -replace '"',''}
+$Modify = $permissions | where-object {$_.'AccessRights' -Match "Modify" -AND $_.IsInherited -eq $false -and $_.'AccessControlType' -ne "Deny"}| Select-Object FullName,Account,AccessRights,AccessControlType  | ConvertTo-Html -PreContent "<h1>Modify</h1>"  -Fragment | Out-String
+$ReadOnly = $permissions | where-object {$_.'AccessRights' -Match "Read" -AND $_.IsInherited -eq $false -and $_.'AccessControlType' -ne "Deny"}| Select-Object FullName,Account,AccessRights,AccessControlType  | ConvertTo-Html -PreContent "<h1>Read Only</h1>" -Fragment | Out-String
+$Deny =   $permissions | where-object {$_.'AccessControlType' -eq "Deny" -AND $_.IsInherited -eq $false} | Select-Object FullName,Account,AccessRights,AccessControlType | ConvertTo-Html -PreContent "<h1>Deny</h1>" -Fragment | Out-String
+$PermCSV = $Permissions | ConvertTo-Csv -Delimiter "," | out-file "C:\Export\ExportOfPermissions.csv" -append
 $head,$FullAccess,$Modify,$ReadOnly,$Deny | Out-File "C:\Export\$($SMBShare.name).html"
 }
