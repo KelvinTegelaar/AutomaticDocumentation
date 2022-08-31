@@ -1,5 +1,5 @@
 # Automatic Documentation with PowerShell
-See https://www.cyberdrain.com/category/series-powershell-documenting/ for more information.
+See https://www.cyberdrain.com/categories/series-powershell-documenting/ for more information.
 
 All scripts uploaded to this repo are related to the blogs above and create automatic documentation, using both IT-Glue and generic documentation systems.
 
